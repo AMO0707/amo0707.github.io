@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Introduction</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Simplified styles for scroll-based content visibility */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://source.unsplash.com/random/1920x1080/?nature');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #2575fc;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .content-section {
+            margin: 40px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Animation variations */
+        .fade-in-left {
+            transform: translateX(-30px);
+        }
+        
+        .fade-in-right {
+            transform: translateX(30px);
+        }
+        
+        .zoom-in {
+            transform: scale(0.9);
+        }
+        
+        .fade-in-left.visible,
+        .fade-in-right.visible,
+        .zoom-in.visible {
+            transform: translateX(0) scale(1);
+        }
+        
+        h2 {
+            color: #2575fc;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .highlight-line {
+            height: 3px;
+            width: 0;
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            margin: -10px 0 20px 0;
+            transition: width 1s ease;
+        }
+        
+        .highlight-line.visible {
+            width: 100%;
+        }
+        
+        .experience-item, .education-item, .project-item {
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .experience-item.visible, .education-item.visible, .project-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .date {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .skill-item {
+            background-color: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .skill-item.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .skill-item:hover {
+            background-color: #e0e0e0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Scroll progress indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+        
+        /* Manual reveal button */
+        .reveal-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .reveal-button:hover {
+            opacity: 1;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .content-container {
+                padding: 15px;
+            }
+            
+            .skills-container {
+                gap: 8px;
+            }
+            
+            .skill-item {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            /* Simplify animations on mobile for better performance */
+            .fade-in-left, .fade-in-right, .zoom-in {
+                transform: translateY(20px);
+            }
+            
+            .fade-in-left.visible, .fade-in-right.visible, .zoom-in.visible {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress"></div>
+    <div class="background-image"></div>
+    <div class="content-container">
+        <header>
+            <h1>Your Name</h1>
+            <p class="subtitle">Your Title or Tagline</p>
+        </header>
+        
+        <div id="content-wrapper">
+            <!-- Initial content visible without scrolling -->
+            <section class="content-section" data-index="0">
+                <h2>Welcome</h2>
+                <p>Hello and welcome to my personal webpage! I'm excited to share a bit about myself with you. As you scroll down, you'll discover more about my background, interests, and experiences.</p>
+            </section>
+            
+            <!-- Content that will appear on scroll -->
+            <section class="content-section" data-index="1">
+                <h2>About Me</h2>
+                <p>I am a passionate individual with interests in [your interests]. My journey began when [brief introduction about yourself]. I believe in [your philosophy or approach to life/work].</p>
+                <p>Throughout my career, I've developed skills in [your key skills]. These have helped me [achievements or how these skills have benefited you].</p>
+            </section>
+            
+            <section class="content-section" data-index="2">
+                <h2>My Experience</h2>
+                <p>I have worked in various roles that have shaped my professional identity. Some highlights include:</p>
+                <div class="experience-item">
+                    <h3>Position Title</h3>
+                    <p class="date">Date Range</p>
+                    <p>Description of responsibilities and achievements in this role.</p>
+                </div>
+                <div class="experience-item">
+                    <h3>Another Position</h3>
+                    <p class="date">Date Range</p>
+                    <p>Description of responsibilities and achievements in this role.</p>
+                </div>
+            </section>
+            
+            <section class="content-section" data-index="3">
+                <h2>Education</h2>
+                <div class="education-item">
+                    <h3>Degree Name</h3>
+                    <p class="date">Graduation Year</p>
+                    <p>Institution Name</p>
+                    <p>Brief description of your studies, achievements, or relevant projects.</p>
+                </div>
+            </section>
+            
+            <section class="content-section" data-index="4">
+                <h2>Skills</h2>
+                <p>I've developed expertise in various areas including:</p>
+                <div class="skills-container">
+                    <div class="skill-item">Skill 1</div>
+                    <div class="skill-item">Skill 2</div>
+                    <div class="skill-item">Skill 3</div>
+                    <div class="skill-item">Skill 4</div>
+                    <div class="skill-item">Skill 5</div>
+                    <div class="skill-item">Skill 6</div>
+                </div>
+            </section>
+            
+            <section class="content-section" data-index="5">
+                <h2>Projects</h2>
+                <div class="project-item">
+                    <h3>Project Name</h3>
+                    <p>Description of the project, your role, and the outcomes or impact.</p>
+                </div>
+                <div class="project-item">
+                    <h3>Another Project</h3>
+                    <p>Description of the project, your role, and the outcomes or impact.</p>
+                </div>
+            </section>
+            
+            <section class="content-section" data-index="6">
+                <h2>Interests</h2>
+                <p>Beyond my professional life, I enjoy [your hobbies and interests]. These activities help me [how they benefit you or why you enjoy them].</p>
+                <p>I'm also passionate about [causes or topics you care about] and [how you engage with these topics].</p>
+            </section>
+            
+            <section class="content-section" data-index="7">
+                <h2>Contact</h2>
+                <p>I'm always open to connecting with new people. Feel free to reach out to me at:</p>
+                <p>Email: your.email@example.com</p>
+                <p>LinkedIn: linkedin.com/in/yourprofile</p>
+                <p>Twitter: @yourhandle</p>
+            </section>
+        </div>
+        
+        <footer>
+            <p>&copy; 2025 Your Name. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script src="simplified.js"></script>
+</body>
+</html>

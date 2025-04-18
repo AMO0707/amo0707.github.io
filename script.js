@@ -1,18 +1,23 @@
+// Enhanced scroll detection and animation system
+// This script replaces the previous script.js with a more reliable implementation
+
 // Global variables
-let lastScrollPosition = 0;
-let ticking = false;
 let contentSections = [];
 let activeDesign = 'design1';
 let dynamicContentCount = 0;
 const maxDynamicSections = 10; // Maximum number of additional sections to load
-let temporaryElements = [];
-let scrollProgress = 0;
-let viewportHeight = 0;
-let documentHeight = 0;
-let isMobile = window.innerWidth <= 768;
+let isScrolling = false;
+let scrollTimeout;
+let lastScrollTop = 0;
+let scrollDirection = 'down';
+let viewportHeight = window.innerHeight;
+let documentHeight = document.body.scrollHeight;
+let scrollPercentage = 0;
 
 // Initialize when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded - initializing enhanced scroll features');
+    
     // Get all initial content sections
     contentSections = document.querySelectorAll('.content-section');
     
@@ -21,14 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const design2Content = document.getElementById('content-wrapper-alt');
     design2Content.innerHTML = design1Content.innerHTML;
     
-    // Add scroll progress indicator
-    createScrollProgressBar();
-    
-    // Add scroll indicator
-    createScrollIndicator();
-    
-    // Add temporary content elements
-    createTemporaryElements();
+    // Apply animation classes to sections
+    applyAnimationClasses();
     
     // Add highlight lines to sections
     addHighlightLines();
@@ -36,74 +35,67 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add quote containers
     addQuoteContainers();
     
-    // Apply animation classes to sections
-    applyAnimationClasses();
-    
-    // Initialize scroll event listener
+    // Initialize scroll event listener with passive option for better performance
     initScrollListener();
-    
-    // Check initial visibility
-    checkSectionsVisibility();
     
     // Initialize design switcher
     document.getElementById('switch-design').addEventListener('click', switchDesign);
     
-    // Check if mobile
-    checkIfMobile();
+    // Listen for resize events with debounce
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(handleResize, 100);
+    });
     
-    // Listen for resize events
-    window.addEventListener('resize', handleResize);
+    // Force initial check for element visibility
+    setTimeout(function() {
+        updateScrollMetrics();
+        checkAllElementsVisibility();
+    }, 100);
+    
+    // Add intersection observer as a fallback for scroll detection
+    initIntersectionObserver();
+    
+    // Log initialization complete
+    console.log('Enhanced scroll features initialized');
 });
 
-// Create scroll progress bar
-function createScrollProgressBar() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'scroll-progress';
-    document.body.appendChild(progressBar);
-}
-
-// Create scroll indicator
-function createScrollIndicator() {
-    const scrollIndicator = document.createElement('div');
-    scrollIndicator.className = 'scroll-indicator';
-    document.body.appendChild(scrollIndicator);
+// Apply different animation classes to sections
+function applyAnimationClasses() {
+    console.log('Applying animation classes to sections');
+    const sections = document.querySelectorAll('.content-section');
+    const animationClasses = ['fade-in-left', 'fade-in-right', 'zoom-in', 'rotate-in'];
     
-    // Hide scroll indicator after 5 seconds
-    setTimeout(() => {
-        scrollIndicator.classList.add('hidden');
-    }, 5000);
-}
-
-// Create temporary content elements
-function createTemporaryElements() {
-    // Top notification
-    const topNotification = document.createElement('div');
-    topNotification.className = 'temporary-content temp-top';
-    topNotification.innerHTML = '<p>Scroll down to discover more about me</p>';
-    document.body.appendChild(topNotification);
-    
-    // Middle notification
-    const middleNotification = document.createElement('div');
-    middleNotification.className = 'temporary-content temp-middle';
-    middleNotification.innerHTML = '<p>You\'re exploring my journey!</p>';
-    document.body.appendChild(middleNotification);
-    
-    // Bottom notification
-    const bottomNotification = document.createElement('div');
-    bottomNotification.className = 'temporary-content temp-bottom';
-    bottomNotification.innerHTML = '<p>Keep scrolling for more content</p>';
-    document.body.appendChild(bottomNotification);
-    
-    // Store references to temporary elements
-    temporaryElements = [
-        { element: topNotification, showAt: 0, hideAt: 20 },
-        { element: middleNotification, showAt: 40, hideAt: 60 },
-        { element: bottomNotification, showAt: 80, hideAt: 100 }
-    ];
+    sections.forEach((section, index) => {
+        // Keep content-section class for styling
+        
+        // Add animation class based on index
+        const animationClass = animationClasses[index % animationClasses.length];
+        section.classList.add(animationClass);
+        
+        // Add parallax background to some sections
+        if (index % 4 === 0) {
+            section.classList.add('parallax-bg');
+        }
+        
+        // Apply staggered animation to experience/education items
+        const items = section.querySelectorAll('.experience-item, .education-item, .project-item');
+        items.forEach((item, itemIndex) => {
+            item.style.transitionDelay = `${0.2 * itemIndex}s`;
+        });
+        
+        // Apply staggered animation to skill items
+        const skillItems = section.querySelectorAll('.skill-item');
+        skillItems.forEach((item, itemIndex) => {
+            item.style.transitionDelay = `${0.1 * itemIndex}s`;
+        });
+    });
 }
 
 // Add highlight lines to sections
 function addHighlightLines() {
+    console.log('Adding highlight lines to sections');
     const sections = document.querySelectorAll('.content-section');
     
     sections.forEach((section, index) => {
@@ -121,6 +113,7 @@ function addHighlightLines() {
 
 // Add quote containers
 function addQuoteContainers() {
+    console.log('Adding quote containers');
     const quotes = [
         { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
         { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
@@ -161,59 +154,60 @@ function addQuoteContainers() {
     });
 }
 
-// Apply different animation classes to sections
-function applyAnimationClasses() {
-    const sections = document.querySelectorAll('.content-section');
-    const animationClasses = ['fade-in-left', 'fade-in-right', 'zoom-in', 'rotate-in'];
+// Initialize scroll event listener
+function initScrollListener() {
+    console.log('Initializing scroll listener');
+    // Get the active design container
+    const activeContainer = document.querySelector('.design.active');
     
-    sections.forEach((section, index) => {
-        // Remove default animation class
-        section.classList.remove('content-section');
-        
-        // Add content-section class back (for margin and other styles)
-        section.classList.add('content-section');
-        
-        // Add animation class based on index
-        const animationClass = animationClasses[index % animationClasses.length];
-        section.classList.add(animationClass);
-        
-        // Add parallax background to some sections
-        if (index % 4 === 0) {
-            section.classList.add('parallax-bg');
-        }
-        
-        // Apply staggered animation to experience/education items
-        const items = section.querySelectorAll('.experience-item, .education-item, .project-item');
-        items.forEach((item, itemIndex) => {
-            item.style.transitionDelay = `${0.2 * itemIndex}s`;
-        });
-        
-        // Apply staggered animation to skill items
-        const skillItems = section.querySelectorAll('.skill-item');
-        skillItems.forEach((item, itemIndex) => {
-            item.style.transitionDelay = `${0.1 * itemIndex}s`;
-        });
-    });
-}
-
-// Check if mobile device
-function checkIfMobile() {
-    isMobile = window.innerWidth <= 768;
+    // Update scroll metrics
+    updateScrollMetrics();
     
-    // Apply mobile-specific optimizations
-    if (isMobile) {
-        // Simplify some animations for better performance on mobile
-        document.querySelectorAll('.rotate-in').forEach(el => {
-            el.classList.remove('rotate-in');
-            el.classList.add('fade-in-left');
-        });
+    // Add scroll event listener with passive option for better performance
+    activeContainer.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Also listen for touchmove events on mobile
+    if ('ontouchstart' in window) {
+        activeContainer.addEventListener('touchmove', handleScroll, { passive: true });
     }
 }
 
-// Handle resize events
-function handleResize() {
-    checkIfMobile();
+// Handle scroll events with throttling for better performance
+function handleScroll(e) {
+    // Get the active design container
+    const activeContainer = document.querySelector('.design.active');
+    const scrollTop = activeContainer.scrollTop;
+    
+    // Determine scroll direction
+    scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+    lastScrollTop = scrollTop;
+    
+    // Update scroll percentage
     updateScrollMetrics();
+    
+    // Update progress bar immediately for smooth effect
+    updateScrollProgressBar();
+    
+    // Use requestAnimationFrame for visual updates
+    if (!isScrolling) {
+        window.requestAnimationFrame(function() {
+            checkAllElementsVisibility();
+            checkTemporaryElements();
+            checkInfiniteScroll();
+        });
+    }
+    
+    isScrolling = true;
+    
+    // Clear the timeout
+    clearTimeout(scrollTimeout);
+    
+    // Set a timeout to run after scrolling ends
+    scrollTimeout = setTimeout(function() {
+        isScrolling = false;
+        // Final check after scrolling stops
+        checkAllElementsVisibility();
+    }, 100);
 }
 
 // Update scroll metrics
@@ -221,130 +215,148 @@ function updateScrollMetrics() {
     const activeContainer = document.querySelector('.design.active');
     viewportHeight = activeContainer.clientHeight;
     documentHeight = activeContainer.scrollHeight;
-}
-
-// Initialize scroll event listener
-function initScrollListener() {
-    // Get the active design container
-    const activeContainer = document.querySelector('.design.active');
-    
-    // Update scroll metrics
-    updateScrollMetrics();
-    
-    // Add scroll event listener
-    activeContainer.addEventListener('scroll', function(e) {
-        lastScrollPosition = activeContainer.scrollTop;
-        
-        // Calculate scroll progress percentage
-        scrollProgress = (lastScrollPosition / (documentHeight - viewportHeight)) * 100;
-        
-        if (!ticking) {
-            window.requestAnimationFrame(function() {
-                updateScrollProgressBar();
-                checkSectionsVisibility();
-                checkTemporaryElements();
-                checkParallaxEffects();
-                checkInfiniteScroll();
-                ticking = false;
-            });
-            
-            ticking = true;
-        }
-    });
+    scrollPercentage = (lastScrollTop / (documentHeight - viewportHeight)) * 100;
 }
 
 // Update scroll progress bar
 function updateScrollProgressBar() {
     const progressBar = document.querySelector('.scroll-progress');
     if (progressBar) {
-        progressBar.style.width = `${scrollProgress}%`;
-    }
-    
-    // Hide scroll indicator after some scrolling
-    if (scrollProgress > 10) {
-        const scrollIndicator = document.querySelector('.scroll-indicator');
-        if (scrollIndicator) {
-            scrollIndicator.classList.add('hidden');
-        }
+        progressBar.style.width = `${scrollPercentage}%`;
     }
 }
 
 // Check temporary elements visibility based on scroll progress
 function checkTemporaryElements() {
-    temporaryElements.forEach(item => {
-        if (scrollProgress >= item.showAt && scrollProgress <= item.hideAt) {
-            item.element.classList.add('visible');
+    // Top notification
+    const topNotification = document.querySelector('.temp-top');
+    if (topNotification) {
+        if (scrollPercentage >= 0 && scrollPercentage <= 20) {
+            topNotification.classList.add('visible');
         } else {
-            item.element.classList.remove('visible');
+            topNotification.classList.remove('visible');
         }
-    });
+    }
+    
+    // Middle notification
+    const middleNotification = document.querySelector('.temp-middle');
+    if (middleNotification) {
+        if (scrollPercentage >= 40 && scrollPercentage <= 60) {
+            middleNotification.classList.add('visible');
+        } else {
+            middleNotification.classList.remove('visible');
+        }
+    }
+    
+    // Bottom notification
+    const bottomNotification = document.querySelector('.temp-bottom');
+    if (bottomNotification) {
+        if (scrollPercentage >= 80 && scrollPercentage <= 100) {
+            bottomNotification.classList.add('visible');
+        } else {
+            bottomNotification.classList.remove('visible');
+        }
+    }
 }
 
-// Check parallax effects
-function checkParallaxEffects() {
+// Check all elements visibility
+function checkAllElementsVisibility() {
     const activeContainer = document.querySelector('.design.active');
-    const parallaxElements = activeContainer.querySelectorAll('.parallax-bg');
+    const scrollTop = activeContainer.scrollTop;
     
-    parallaxElements.forEach(element => {
-        const elementTop = element.offsetTop;
-        const elementHeight = element.offsetHeight;
-        const centerPosition = elementTop + elementHeight / 2;
-        const distanceFromCenter = centerPosition - (lastScrollPosition + viewportHeight / 2);
-        const parallaxValue = distanceFromCenter * 0.1;
-        
-        element.style.backgroundPositionY = `calc(50% + ${parallaxValue}px)`;
-    });
-}
-
-// Check if sections are visible and apply animation
-function checkSectionsVisibility() {
-    const activeContainer = document.querySelector('.design.active');
-    const viewportHeight = activeContainer.clientHeight;
-    const scrollPosition = activeContainer.scrollTop;
-    
-    // Get all content sections in the active design
+    // Get all content sections and their child elements
     const sections = activeContainer.querySelectorAll('.content-section, .fade-in-left, .fade-in-right, .zoom-in, .rotate-in');
     
     sections.forEach(function(section) {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
+        // Calculate element position relative to viewport
+        const rect = section.getBoundingClientRect();
+        const sectionTop = rect.top + scrollTop - activeContainer.offsetTop;
+        const sectionHeight = rect.height;
         
-        // Check if section is in viewport
-        if (scrollPosition + viewportHeight > sectionTop + 100 && 
-            scrollPosition < sectionTop + sectionHeight - 100) {
-            section.classList.add('visible');
+        // Check if section is in viewport with a buffer
+        // More generous threshold to ensure elements become visible
+        if (scrollTop + viewportHeight > sectionTop + 50 && 
+            scrollTop < sectionTop + sectionHeight - 50) {
+            
+            // Add visible class if not already present
+            if (!section.classList.contains('visible')) {
+                console.log('Making section visible:', section);
+                section.classList.add('visible');
+            }
             
             // Also check for child elements that need their own animations
-            const highlightLines = section.querySelectorAll('.highlight-line');
-            highlightLines.forEach(line => line.classList.add('visible'));
-            
-            const quoteContainers = section.querySelectorAll('.quote-container');
-            quoteContainers.forEach(quote => quote.classList.add('visible'));
-            
-            const experienceItems = section.querySelectorAll('.experience-item, .education-item, .project-item');
-            experienceItems.forEach(item => item.classList.add('visible'));
-            
-            const skillItems = section.querySelectorAll('.skill-item');
-            skillItems.forEach(item => item.classList.add('visible'));
-        } else if (scrollPosition > sectionTop + sectionHeight || 
-                  scrollPosition + viewportHeight < sectionTop) {
-            // Optional: Remove visible class when section is far out of viewport
-            // Uncomment the next line to make elements animate again when scrolling back
-            // section.classList.remove('visible');
+            makeChildElementsVisible(section);
         }
     });
+}
+
+// Make child elements visible
+function makeChildElementsVisible(section) {
+    // Highlight lines
+    const highlightLines = section.querySelectorAll('.highlight-line:not(.visible)');
+    highlightLines.forEach(line => line.classList.add('visible'));
+    
+    // Quote containers
+    const quoteContainers = section.querySelectorAll('.quote-container:not(.visible)');
+    quoteContainers.forEach(quote => quote.classList.add('visible'));
+    
+    // Experience items
+    const experienceItems = section.querySelectorAll('.experience-item:not(.visible), .education-item:not(.visible), .project-item:not(.visible)');
+    experienceItems.forEach(item => item.classList.add('visible'));
+    
+    // Skill items
+    const skillItems = section.querySelectorAll('.skill-item:not(.visible)');
+    skillItems.forEach(item => item.classList.add('visible'));
+    
+    // Mobile-specific elements
+    const mobileElements = section.querySelectorAll('.mobile-reveal:not(.visible), .mobile-divider:not(.visible)');
+    mobileElements.forEach(item => item.classList.add('visible'));
+}
+
+// Initialize Intersection Observer as a fallback for scroll detection
+function initIntersectionObserver() {
+    console.log('Initializing Intersection Observer');
+    // Check if Intersection Observer API is available
+    if ('IntersectionObserver' in window) {
+        const options = {
+            root: document.querySelector('.design.active'),
+            rootMargin: '0px',
+            threshold: 0.1 // Trigger when at least 10% of the element is visible
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Element is visible
+                    entry.target.classList.add('visible');
+                    
+                    // Also make child elements visible
+                    makeChildElementsVisible(entry.target);
+                    
+                    // Unobserve after making visible to improve performance
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, options);
+        
+        // Observe all sections
+        document.querySelectorAll('.content-section, .fade-in-left, .fade-in-right, .zoom-in, .rotate-in').forEach(section => {
+            observer.observe(section);
+        });
+    } else {
+        console.log('Intersection Observer not supported, falling back to scroll detection');
+    }
 }
 
 // Check if we need to load more content (infinite scroll)
 function checkInfiniteScroll() {
     const activeContainer = document.querySelector('.design.active');
     const contentWrapper = activeContainer.querySelector('[id^="content-wrapper"]');
-    const scrollPosition = activeContainer.scrollTop;
+    const scrollTop = activeContainer.scrollTop;
     const contentHeight = contentWrapper.offsetHeight;
-    const viewportHeight = activeContainer.clientHeight;
     
     // If we're near the bottom and haven't reached max sections
-    if (scrollPosition + viewportHeight > contentHeight - 300 && 
+    if (scrollTop + viewportHeight > contentHeight - 300 && 
         dynamicContentCount < maxDynamicSections) {
         loadMoreContent();
     }
@@ -352,6 +364,7 @@ function checkInfiniteScroll() {
 
 // Load more content dynamically
 function loadMoreContent() {
+    console.log('Loading more content');
     // Get template content
     const template = document.getElementById('content-template');
     if (!template) return;
@@ -388,55 +401,10 @@ function loadMoreContent() {
         newSection.appendChild(pContainer);
     }
     
-    // Add highlight line with 50% chance
-    if (Math.random() > 0.5) {
-        const highlightLine = document.createElement('div');
-        highlightLine.className = 'highlight-line';
-        newSection.insertBefore(highlightLine, newSection.firstChild.nextSibling);
-    }
-    
-    // Add quote with 30% chance
-    if (Math.random() > 0.7) {
-        const quotes = [
-            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-            { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-            { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" }
-        ];
-        
-        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        
-        const quoteContainer = document.createElement('div');
-        quoteContainer.className = 'quote-container';
-        
-        const quoteText = document.createElement('div');
-        quoteText.className = 'quote-text';
-        quoteText.textContent = `"${randomQuote.text}"`;
-        
-        const quoteAuthor = document.createElement('div');
-        quoteAuthor.className = 'quote-author';
-        quoteAuthor.textContent = `— ${randomQuote.author}`;
-        
-        quoteContainer.appendChild(quoteText);
-        quoteContainer.appendChild(quoteAuthor);
-        
-        // Add after the first paragraph
-        const firstParagraph = newSection.querySelector('p');
-        if (firstParagraph) {
-            newSection.insertBefore(quoteContainer, firstParagraph.nextSibling);
-        } else {
-            newSection.appendChild(quoteContainer);
-        }
-    }
-    
     // Apply a random animation class
     const animationClasses = ['fade-in-left', 'fade-in-right', 'zoom-in', 'rotate-in'];
     const randomAnimationClass = animationClasses[Math.floor(Math.random() * animationClasses.length)];
     newSection.classList.add(randomAnimationClass);
-    
-    // Add parallax background with 25% chance
-    if (Math.random() > 0.75) {
-        newSection.classList.add('parallax-bg');
-    }
     
     // Add to both designs
     document.getElementById('content-wrapper').appendChild(newSection.cloneNode(true));
@@ -445,12 +413,48 @@ function loadMoreContent() {
     // Update scroll metrics after adding new content
     updateScrollMetrics();
     
-    // Check visibility of new section
-    setTimeout(checkSectionsVisibility, 100);
+    // Force check visibility of new section
+    setTimeout(function() {
+        checkAllElementsVisibility();
+        
+        // Also add to intersection observer if available
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        makeChildElementsVisible(entry.target);
+                    }
+                });
+            }, {
+                root: document.querySelector('.design.active'),
+                threshold: 0.1
+            });
+            
+            observer.observe(newSection);
+        }
+    }, 100);
+}
+
+// Handle resize events
+function handleResize() {
+    console.log('Handling resize event');
+    updateScrollMetrics();
+    checkAllElementsVisibility();
+    
+    // Check if mobile and apply optimizations
+    if (window.innerWidth <= 768) {
+        // Simplify some animations for better performance on mobile
+        document.querySelectorAll('.rotate-in').forEach(el => {
+            el.classList.remove('rotate-in');
+            el.classList.add('fade-in-left');
+        });
+    }
 }
 
 // Switch between designs
 function switchDesign() {
+    console.log('Switching design');
     const design1 = document.getElementById('design1');
     const design2 = document.getElementById('design2');
     
@@ -467,6 +471,12 @@ function switchDesign() {
     // Reinitialize scroll listener for the new active design
     initScrollListener();
     
-    // Check sections visibility in the new design
-    checkSectionsVisibility();
+    // Reset scroll position
+    document.querySelector('.design.active').scrollTop = 0;
+    
+    // Force check visibility after design switch
+    setTimeout(function() {
+        updateScrollMetrics();
+        checkAllElementsVisibility();
+    }, 100);
 }

@@ -1,0 +1,242 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+    position: relative;
+    height: 100vh;
+}
+
+h1, h2, h3 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+/* Design container styles */
+.design {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.design.active {
+    display: block;
+}
+
+/* Design 1: Semi-transparent background */
+#design1 .background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://source.unsplash.com/random/1920x1080/?nature');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.3; /* Semi-transparent background */
+    z-index: -1;
+}
+
+#design1 .content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.85);
+    min-height: 100%;
+}
+
+/* Design 2: Split background with center content */
+#design2 {
+    display: flex;
+    flex-direction: row;
+}
+
+#design2 .background-left,
+#design2 .background-right {
+    position: fixed;
+    top: 0;
+    width: 25%;
+    height: 100%;
+    background-image: url('https://source.unsplash.com/random/1920x1080/?nature');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+#design2 .background-left {
+    left: 0;
+}
+
+#design2 .background-right {
+    right: 0;
+}
+
+#design2 .content-container {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff;
+    min-height: 100%;
+}
+
+/* Header styles */
+header {
+    text-align: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 2rem;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* Content section styles */
+.content-section {
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.content-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Experience and education items */
+.experience-item, .education-item, .project-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.date {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+/* Skills container */
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.skill-item {
+    background-color: #f0f0f0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Footer styles */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid #eee;
+    color: #666;
+}
+
+/* Design switcher */
+.design-switcher {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.design-switcher button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.design-switcher button:hover {
+    background-color: #555;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .content-container {
+        padding: 1rem;
+    }
+    
+    #design2 .background-left,
+    #design2 .background-right {
+        width: 15%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    #design2 .background-left,
+    #design2 .background-right {
+        width: 10%;
+    }
+    
+    .skills-container {
+        gap: 0.5rem;
+    }
+    
+    .skill-item {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

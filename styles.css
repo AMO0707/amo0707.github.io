@@ -49,6 +49,7 @@ p {
     display: none;
     overflow-y: auto;
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
 }
 
 .design.active {
@@ -128,12 +129,56 @@ header {
     margin-bottom: 1rem;
 }
 
-/* Content section styles */
+/* Enhanced scroll animations */
+.scroll-indicator {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+    border: 2px solid #333;
+    border-radius: 15px;
+    z-index: 100;
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+}
+
+.scroll-indicator:before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    background-color: #333;
+    border-radius: 50%;
+    animation: scrollIndicator 2s infinite;
+}
+
+@keyframes scrollIndicator {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+}
+
+.scroll-indicator.hidden {
+    opacity: 0;
+}
+
+/* Content section styles with enhanced animations */
 .content-section {
     margin-bottom: 3rem;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
     transition: opacity 0.8s ease, transform 0.8s ease;
+    position: relative;
 }
 
 .content-section.visible {
@@ -141,11 +186,186 @@ header {
     transform: translateY(0);
 }
 
-/* Experience and education items */
+/* New animation classes for different effects */
+.fade-in-left {
+    transform: translateX(-50px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in-left.visible {
+    transform: translateX(0);
+}
+
+.fade-in-right {
+    transform: translateX(50px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in-right.visible {
+    transform: translateX(0);
+}
+
+.zoom-in {
+    transform: scale(0.8);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.zoom-in.visible {
+    transform: scale(1);
+}
+
+.rotate-in {
+    transform: rotateY(40deg);
+    perspective: 1000px;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.rotate-in.visible {
+    transform: rotateY(0);
+}
+
+/* Temporary content that appears and disappears */
+.temporary-content {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    z-index: 90;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+}
+
+.temporary-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.temp-top {
+    top: 0;
+}
+
+.temp-middle {
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(60, 60, 180, 0.8);
+}
+
+.temp-middle.visible {
+    transform: translateY(-50%);
+}
+
+.temp-bottom {
+    bottom: 70px;
+    background-color: rgba(60, 180, 60, 0.8);
+}
+
+/* Highlight line that appears at specific scroll points */
+.highlight-line {
+    height: 3px;
+    width: 0;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    margin: 10px auto;
+    transition: width 1.5s ease-in-out;
+}
+
+.highlight-line.visible {
+    width: 100%;
+}
+
+/* Animated quote */
+.quote-container {
+    position: relative;
+    padding: 20px;
+    margin: 30px 0;
+    border-left: 0px solid #2575fc;
+    background-color: rgba(240, 240, 255, 0.5);
+    transition: border-left 0.8s ease, background-color 0.8s ease;
+}
+
+.quote-container.visible {
+    border-left: 5px solid #2575fc;
+    background-color: rgba(240, 240, 255, 0.9);
+}
+
+.quote-text {
+    font-style: italic;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+}
+
+.quote-container.visible .quote-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.quote-author {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 10px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.8s ease 0.8s, transform 0.8s ease 0.8s;
+}
+
+.quote-container.visible .quote-author {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Parallax effect for section backgrounds */
+.parallax-bg {
+    position: relative;
+    overflow: hidden;
+    padding: 30px 20px;
+}
+
+.parallax-bg:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://source.unsplash.com/random/800x600/?abstract');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    z-index: -1;
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+}
+
+/* Progress indicator */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    z-index: 1000;
+    transition: width 0.1s ease;
+}
+
+/* Experience and education items with enhanced animations */
 .experience-item, .education-item, .project-item {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.experience-item.visible, .education-item.visible, .project-item.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .date {
@@ -154,7 +374,7 @@ header {
     margin-bottom: 0.5rem;
 }
 
-/* Skills container */
+/* Skills container with staggered animation */
 .skills-container {
     display: flex;
     flex-wrap: wrap;
@@ -167,7 +387,27 @@ header {
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
 }
+
+.skill-item.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.skill-item:hover {
+    background-color: #e0e0ff;
+}
+
+/* Staggered animation delays for skills */
+.skill-item:nth-child(1) { transition-delay: 0.1s; }
+.skill-item:nth-child(2) { transition-delay: 0.2s; }
+.skill-item:nth-child(3) { transition-delay: 0.3s; }
+.skill-item:nth-child(4) { transition-delay: 0.4s; }
+.skill-item:nth-child(5) { transition-delay: 0.5s; }
+.skill-item:nth-child(6) { transition-delay: 0.6s; }
 
 /* Footer styles */
 footer {
@@ -194,14 +434,19 @@ footer {
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .design-switcher button:hover {
     background-color: #555;
+    transform: scale(1.05);
 }
 
-/* Responsive styles */
+.design-switcher button:active {
+    transform: scale(0.95);
+}
+
+/* Responsive styles with enhanced mobile optimizations */
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;
@@ -218,6 +463,22 @@ footer {
     #design2 .background-left,
     #design2 .background-right {
         width: 15%;
+    }
+    
+    /* Mobile-specific animations */
+    .content-section {
+        transform: translateY(20px);
+    }
+    
+    .temporary-content {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .scroll-indicator {
+        bottom: 60px;
+        width: 24px;
+        height: 40px;
     }
 }
 
@@ -238,5 +499,36 @@ footer {
     .skill-item {
         padding: 0.3rem 0.8rem;
         font-size: 0.8rem;
+    }
+    
+    /* Enhanced mobile animations */
+    .fade-in-left, .fade-in-right {
+        transform: translateY(20px); /* Simplify animations on very small screens */
+    }
+    
+    .fade-in-left.visible, .fade-in-right.visible {
+        transform: translateY(0);
+    }
+    
+    .temporary-content {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .scroll-indicator {
+        bottom: 50px;
+        width: 20px;
+        height: 34px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+    .skill-item:hover {
+        background-color: #f0f0f0; /* Remove hover effect on touch devices */
+    }
+    
+    .design-switcher button {
+        padding: 12px 18px; /* Larger touch target */
     }
 }

@@ -1,42 +1,40 @@
-// Simplified JavaScript for personal webpage with scroll-based content visibility
-// Optimized for both PC and mobile devices
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Initializing personal webpage with fullscreen sections');
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing simplified personal webpage');
-    
     // Get all content sections
     const contentSections = document.querySelectorAll('.content-section');
-    
+
     // Apply animation classes to sections
     applyAnimationClasses(contentSections);
-    
+
     // Add highlight lines to sections
     addHighlightLines(contentSections);
-    
-    // Initialize scroll event listener
-    initScrollListener();
-    
-    // Force initial check for element visibility
-    setTimeout(function() {
-        checkElementsVisibility();
-    }, 100);
-    
+
+    // Initialize scroll progress bar
+    initScrollProgressBar();
+
+    // Track scroll direction
+    initScrollDirectionTracking();
+
     // Initialize intersection observer for better scroll detection
     initIntersectionObserver(contentSections);
-    
+
     console.log('Initialization complete');
+
+  
 });
 
 // Apply different animation classes to sections
 function applyAnimationClasses(sections) {
     console.log('Applying animation classes');
-    const animationClasses = ['fade-in-left', 'fade-in-right', 'zoom-in'];
-    
+
     sections.forEach((section, index) => {
-        // Add animation class based on index
-        const animationClass = animationClasses[index % animationClasses.length];
-        section.classList.add(animationClass);
+        // Initially add fade-in-up class to all sections
+        section.classList.add('fade-in-up');
         
+        // Store the original animation class for reference
+        section.setAttribute('data-original-animation', 'fade-in-up');
+
         // Apply staggered animation to items
         const items = section.querySelectorAll('.experience-item, .education-item, .project-item, .skill-item');
         items.forEach((item, itemIndex) => {
@@ -48,48 +46,22 @@ function applyAnimationClasses(sections) {
 // Add highlight lines to sections
 function addHighlightLines(sections) {
     console.log('Adding highlight lines');
-    
+
     sections.forEach((section, index) => {
-        // Add highlight line after every second heading
-        if (index % 2 === 1) {
-            const heading = section.querySelector('h2');
-            if (heading) {
-                const highlightLine = document.createElement('div');
-                highlightLine.className = 'highlight-line';
-                heading.parentNode.insertBefore(highlightLine, heading.nextSibling);
-            }
+        // Add highlight line after every heading
+        const heading = section.querySelector('h2');
+        if (heading) {
+            const highlightLine = document.createElement('div');
+            highlightLine.className = 'highlight-line';
+            heading.parentNode.insertBefore(highlightLine, heading.nextSibling);
         }
     });
 }
 
-// Initialize scroll event listener
-function initScrollListener() {
-    console.log('Initializing scroll listener');
-    
-    // Add scroll event listener with passive option for better performance
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Also listen for touchmove events on mobile
-    if ('ontouchstart' in window) {
-        window.addEventListener('touchmove', handleScroll, { passive: true });
-    }
-}
-
-// Handle scroll events with throttling for better performance
-let isScrolling = false;
-function handleScroll() {
-    // Update scroll progress bar
-    updateScrollProgressBar();
-    
-    // Use requestAnimationFrame for visual updates
-    if (!isScrolling) {
-        window.requestAnimationFrame(function() {
-            checkElementsVisibility();
-            isScrolling = false;
-        });
-    }
-    
-    isScrolling = true;
+// Initialize scroll progress bar
+function initScrollProgressBar() {
+    window.addEventListener('scroll', updateScrollProgressBar, { passive: true });
+    updateScrollProgressBar(); // Initial update
 }
 
 // Update scroll progress bar
@@ -98,73 +70,147 @@ function updateScrollProgressBar() {
     const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = document.documentElement.clientHeight;
     const scrollPercentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
-    
+
     const progressBar = document.querySelector('.scroll-progress');
     if (progressBar) {
         progressBar.style.width = `${scrollPercentage}%`;
     }
 }
 
-// Check elements visibility
-function checkElementsVisibility() {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const viewportHeight = window.innerHeight;
-    
-    // Get all content sections and their child elements
-    const sections = document.querySelectorAll('.content-section, .fade-in-left, .fade-in-right, .zoom-in');
-    
-    sections.forEach(function(section) {
-        // Calculate element position relative to viewport
-        const rect = section.getBoundingClientRect();
+// Track scroll direction
+let lastScrollTop = 0;
+let scrollDirection = 'down';
+
+function initScrollDirectionTracking() {
+    window.addEventListener('scroll', function() {
+        const st = window.scrollY || document.documentElement.scrollTop;
         
-        // Check if section is in viewport with a buffer
-        if (rect.top < viewportHeight - 50 && rect.bottom > 50) {
-            // Add visible class if not already present
-            if (!section.classList.contains('visible')) {
-                console.log('Making section visible:', section);
-                section.classList.add('visible');
+        if (st > lastScrollTop) {
+            // Scrolling down
+            if (scrollDirection !== 'down') {
+                scrollDirection = 'down';
+                console.log('Scroll direction changed to DOWN');
+                
+                // Update animation classes for all sections
+                updateAnimationClasses('fade-in-up');
             }
+        } else if (st < lastScrollTop) {
+            // Scrolling up
+            if (scrollDirection !== 'up') {
+                scrollDirection = 'up';
+                console.log('Scroll direction changed to UP');
+                
+                // Update animation classes for all sections
+                updateAnimationClasses('fade-in-down');
+                
+                // When direction changes to up, reset all sections that are not in view
+                // This ensures they'll animate again when scrolled back into view
+                resetSectionsOutOfView();
+            }
+        }
+        
+        lastScrollTop = st <= 0 ? 0 : st; // For mobile or negative scrolling
+    }, { passive: true });
+}
+
+// Update animation classes based on scroll direction
+// function updateAnimationClasses(newAnimationClass) {
+//     const sections = document.querySelectorAll('.content-section');
+    
+//     sections.forEach(section => {
+//         // Remove current animation classes
+//         section.classList.remove('fade-in-up', 'fade-in-down');
+        
+//         // Add new animation class
+//         section.classList.add(newAnimationClass);
+//     });
+// }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('close-button').addEventListener('click', function() {
+    window.close();
+    
+    // Fallback for browsers that block window.close()
+    // This will redirect to a blank page if window.close() fails
+    setTimeout(function() {
+      window.location.href = 'about:blank';
+    }, 300);
+  });
+  
+});
+
+function updateAnimationClasses(newAnimationClass) {
+    // Don't change classes of sections already in view
+    const sections = document.querySelectorAll('.content-section:not(.visible)');
+    
+    sections.forEach(section => {
+        // Remove current animation classes
+        section.classList.remove('fade-in-up', 'fade-in-down');
+        
+        // Add new animation class
+        section.classList.add(newAnimationClass);
+    });
+}
+
+// Reset sections that are not currently in the viewport
+function resetSectionsOutOfView() {
+    const sections = document.querySelectorAll('.content-section');
+    
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // If section is not in viewport
+        if (rect.bottom <= 0 || rect.top >= viewportHeight) {
+            // Remove visible class to reset animation state
+            section.classList.remove('visible');
             
-            // Also check for child elements that need their own animations
-            makeChildElementsVisible(section);
+            // Also reset child elements
+            const childElements = section.querySelectorAll('.highlight-line, .experience-item, .education-item, .project-item, .skill-item');
+            childElements.forEach(element => {
+                element.classList.remove('visible');
+            });
         }
     });
 }
 
-// Make child elements visible
-function makeChildElementsVisible(section) {
-    // Highlight lines
-    const highlightLines = section.querySelectorAll('.highlight-line:not(.visible)');
-    highlightLines.forEach(line => line.classList.add('visible'));
-    
-    // Experience items
-    const experienceItems = section.querySelectorAll('.experience-item:not(.visible), .education-item:not(.visible), .project-item:not(.visible)');
-    experienceItems.forEach(item => item.classList.add('visible'));
-    
-    // Skill items
-    const skillItems = section.querySelectorAll('.skill-item:not(.visible)');
-    skillItems.forEach(item => item.classList.add('visible'));
-}
-
 // Initialize Intersection Observer for better scroll detection
 function initIntersectionObserver(sections) {
-    console.log('Initializing Intersection Observer');
-    
+    console.log('Initializing Intersection Observer for fullscreen sections');
+
     // Check if Intersection Observer API is available
     if ('IntersectionObserver' in window) {
+        // Create options for the observer
         const options = {
+            // Root margin to trigger slightly before/after element enters/exits viewport
+            //rootMargin: '-10% 0px -10% 0px',
             rootMargin: '0px',
-            threshold: 0.1 // Trigger when at least 10% of the element is visible
+            threshold: 0.5
         };
-        
+
+        // Create the observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const section = entry.target;
+                
                 if (entry.isIntersecting) {
-                    // Element is visible
-                    entry.target.classList.add('visible');
+                    // Element is entering the viewport
+                    console.log('Section entering viewport:', section.dataset.index);
                     
-                    // Also make child elements visible
-                    makeChildElementsVisible(entry.target);
+                    // Add visible class to trigger animation
+                    if (!section.classList.contains('visible')) {
+                        section.classList.add('visible');
+                        
+                        // Also make child elements visible with animation
+                        animateChildElements(section);
+                    }
+                } else {
+                    // Element is exiting the viewport
+                    // If scrolling up, remove visible class to prepare for re-animation
+                    if (scrollDirection === 'up') {
+                        section.classList.remove('visible');
+                        resetChildElements(section);
+                    }
                 }
             });
         }, options);
@@ -175,22 +221,94 @@ function initIntersectionObserver(sections) {
         });
     } else {
         console.log('Intersection Observer not supported, falling back to scroll detection');
+        // Fallback to traditional scroll event
+        window.addEventListener('scroll', handleScrollFallback, { passive: true });
     }
 }
 
-// Add a manual reveal button for accessibility
-(function addManualRevealButton() {
-    const revealButton = document.createElement('button');
-    revealButton.textContent = 'Show All Content';
-    revealButton.className = 'reveal-button';
-    revealButton.addEventListener('click', function() {
-        document.querySelectorAll('.content-section, .fade-in-left, .fade-in-right, .zoom-in, .highlight-line, .experience-item, .education-item, .project-item, .skill-item')
-            .forEach(el => el.classList.add('visible'));
+// Animate child elements with staggered delay
+function animateChildElements(section) {
+    // Highlight lines
+    const highlightLines = section.querySelectorAll('.highlight-line');
+    highlightLines.forEach((line, index) => {
+        setTimeout(() => {
+            line.classList.add('visible');
+        }, 200);
     });
-    document.body.appendChild(revealButton);
-})();
+
+    // Experience, education, and project items
+    const items = section.querySelectorAll('.experience-item, .education-item, .project-item');
+    items.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, 300 + (index * 150));
+    });
+
+    // Skill items
+    const skillItems = section.querySelectorAll('.skill-item');
+    skillItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, 300 + (index * 100));
+    });
+}
+
+// Reset child elements animation state
+function resetChildElements(section) {
+    const elements = section.querySelectorAll('.highlight-line, .experience-item, .education-item, .project-item, .skill-item');
+    elements.forEach(element => {
+        element.classList.remove('visible');
+    });
+}
+
+// Fallback scroll handler for browsers without Intersection Observer
+function handleScrollFallback() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const viewportHeight = window.innerHeight;
+    
+    // Update scroll progress
+    updateScrollProgressBar();
+    
+    // Get all content sections
+    const sections = document.querySelectorAll('.content-section');
+    
+    sections.forEach(function (section) {
+        // Calculate element position relative to viewport
+        const rect = section.getBoundingClientRect();
+        
+        // Check if section is in viewport
+        if (rect.top < viewportHeight * 0.9 && rect.bottom > viewportHeight * 0.1) {
+            // Section is visible
+            if (!section.classList.contains('visible')) {
+                section.classList.add('visible');
+                animateChildElements(section);
+            }
+        } else {
+            // Section is not visible
+            // If scrolling up, remove visible class to prepare for re-animation
+            if (scrollDirection === 'up') {
+                section.classList.remove('visible');
+                resetChildElements(section);
+            }
+        }
+    });
+}
 
 // Handle window resize events
-window.addEventListener('resize', function() {
-    checkElementsVisibility();
+window.addEventListener('resize', function () {
+    // Recalculate section visibility on resize
+    if (!('IntersectionObserver' in window)) {
+        handleScrollFallback();
+    }
+});
+
+// Parallax effect for background elements
+window.addEventListener('scroll', function() {
+  const scrollPosition = window.scrollY;
+  
+  document.querySelectorAll('.parallax-layer').forEach(layer => {
+    const speed = layer.getAttribute('data-speed');
+    const yPos = -(scrollPosition * speed);
+    layer.style.transform = `translateY(${yPos}px)`;
+  });
 });

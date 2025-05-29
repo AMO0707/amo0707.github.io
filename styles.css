@@ -92,12 +92,6 @@ body {
   z-index: -1;
 }
 
-/* Mobile-specific adjustments */
-@media (max-width: 768px) {
-  .background-image {
-    opacity: 0.08; /* More transparent on mobile */
-  }
-
 /* .content-container {
   width: 100%;
   max-width: 860px;

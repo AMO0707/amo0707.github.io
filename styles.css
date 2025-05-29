@@ -11,7 +11,7 @@
   --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   --highlight-color: #2575fc;
   --border-color: #e0e0e0;
-  --backdrop-blur: 10px;
+  --backdrop-blur: 5px;
   --container-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   --container-border: 1px solid rgba(255, 255, 255, 0.1);
 
@@ -96,17 +96,6 @@ body {
   z-index: -1;
 }
 
-/* .content-container {
-  width: 100%;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--container-bgc);
-
-  position: relative;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-} */
-
 .content-container {
   width: var(--container-width);
   max-width: var(--container-max-width);
@@ -115,14 +104,13 @@ body {
   background: var(--container-bg);
   position: relative;
   box-shadow: var(--container-shadow);
-  /*   backdrop-filter: blur(var(--backdrop-blur));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur)); */
-  backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
-  /* Increased blur on mobile */
-  -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
   border-radius: 12px;
   border: var(--container-border);
   transition: var(--transition-speed), box-shadow var(--transition-speed);
+
+  
 }
 
 header {
@@ -491,9 +479,103 @@ body:not(.dark-theme) .toggle-icon.light {
   }
 }
 
+@media (min-width: 1024px) {
+  :root {
+    --container-width: clamp(720px, 46%, 960px);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-bg: rgba(255, 255, 255, 0.3);
+  }
+  .background-image {
+    opacity: 0.08; /* More transparent on mobile */
+  }
+  
+  .content-container {
+    backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5)); /* Increased blur on mobile */
+    -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
+
+    padding: 15px;
+    border-radius: 8px; /* Slightly smaller radius on mobile */
+    margin: 0 10px; /* Add side margins instead of full width */
+    width: auto;
+  }
+}
 
 @media (max-width: 480px) {
-  :root {
-    --bg-opacity: 0.1; /* More transparent background on small screens */
+  .content-container {
+    padding: 12px;
+    border-width: 1px; /* Thinner border on small devices */
+  }
+}
+
+.content-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, 
+                rgba(255,255,255,0.05), 
+                rgba(255,255,255,0.02));
+  pointer-events: none;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.dark-theme .content-container::before {
+  background: linear-gradient(to bottom, 
+                rgba(0,0,0,0.1), 
+                rgba(0,0,0,0.05));
+}
+
+@media (max-width: 768px) {
+  .content-container::before {
+    background: linear-gradient(to bottom, 
+                  rgba(255,255,255,0.08), 
+                  rgba(255,255,255,0.03));
+  }
+  
+  .dark-theme .content-container::before {
+    background: linear-gradient(to bottom, 
+                  rgba(0,0,0,0.15), 
+                  rgba(0,0,0,0.08));
+  }
+}
+
+@media (max-width: 768px) {
+  .content-section p {
+    text-shadow: 0 1px 1px rgba(0,0,0,0.05); /* Subtle text shadow for readability */
+  }
+  
+  .dark-theme .content-section p {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  
+  h1, h2, h3 {
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  }
+  
+  .dark-theme h1, 
+  .dark-theme h2, 
+  .dark-theme h3 {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Use simpler animations on mobile */
+  .content-section {
+    will-change: opacity; /* Limit will-change to just opacity */
+  }
+  
+  /* Simplify transitions on mobile */
+  .content-section,
+  .image-container,
+  .live-photo-container {
+    transition-duration: 0.2s; /* Slightly faster transitions */
   }
 }

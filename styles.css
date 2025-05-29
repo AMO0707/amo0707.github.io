@@ -15,6 +15,9 @@
   --container-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   --container-border: 1px solid rgba(255, 255, 255, 0.1);
 
+  --container-width: clamp(85%, 860px, 95%);
+  --container-max-width: 1200px;
+  --bg-opacity: 0.15;
 
   /* Text size (default: medium) */
   --base-font-size: 16px;
@@ -88,7 +91,8 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.15;
+  opacity: var(--bg-opacity);
+  transition: opacity var(--transition-speed);
   z-index: -1;
 }
 
@@ -104,16 +108,17 @@ body {
 } */
 
 .content-container {
-  width: 100%;
-  max-width: 860px;
+  width: var(--container-width);
+  max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 20px;
   background: var(--container-bg);
   position: relative;
   box-shadow: var(--container-shadow);
-/*   backdrop-filter: blur(var(--backdrop-blur));
+  /*   backdrop-filter: blur(var(--backdrop-blur));
   -webkit-backdrop-filter: blur(var(--backdrop-blur)); */
-  backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5)); /* Increased blur on mobile */
+  backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
+  /* Increased blur on mobile */
   -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
   border-radius: 12px;
   border: var(--container-border);
@@ -210,39 +215,6 @@ header h1 {
 
 .reveal-button:hover {
   background-color: #3367d6;
-}
-
-/* Media queries for responsiveness */
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .content-section h2 {
-    font-size: 2rem;
-  }
-
-  .content-section p {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  header h1 {
-    font-size: 1.8rem;
-  }
-
-  .content-section {
-    padding: 1.5rem;
-  }
-
-  .content-section h2 {
-    font-size: 1.8rem;
-  }
 }
 
 #close-button {
@@ -367,21 +339,9 @@ body:not(.dark-theme) .toggle-icon.light {
   opacity: 1;
 }
 
-/* Collapsed state for mobile */
-@media (max-width: 768px) {
-  .preferences-panel {
-    transform: translateX(calc(100% - 40px));
-  }
-
-  .preferences-panel:hover,
-  .preferences-panel:focus-within {
-    transform: translateX(0);
-  }
-}
-
 /* Live Photo Style Video Player */
 .live-photo-container {
-  width: 350px;
+  width: clamp(250px, 90%, 450px);
   aspect-ratio: 16 / 9;
   border-radius: 16px;
   overflow: hidden;
@@ -463,7 +423,8 @@ body:not(.dark-theme) .toggle-icon.light {
 }
 
 .images-row .image-container {
-  margin: 0; /* Remove the top/bottom margin since the row has margin */
+  margin: 0;
+  /* Remove the top/bottom margin since the row has margin */
 }
 
 
@@ -482,4 +443,62 @@ body:not(.dark-theme) .toggle-icon.light {
 
 .image-container:hover .feature-image {
   transform: scale(1.03);
+}
+
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .content-section h2 {
+    font-size: 2rem;
+  }
+
+  .content-section p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .content-section {
+    padding: 1.5rem;
+  }
+
+  .content-section h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Collapsed state for mobile */
+@media (max-width: 768px) {
+  .preferences-panel {
+    transform: translateX(calc(100% - 40px));
+  }
+
+  .preferences-panel:hover,
+  .preferences-panel:focus-within {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --container-width: clamp(860px, 60%, 1100px);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --bg-opacity: 0.1; /* More transparent background on small screens */
+  }
 }

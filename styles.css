@@ -126,22 +126,6 @@ body {
   transition: var(--transition-speed), box-shadow var(--transition-speed);
 }
 
-  @media (max-width: 768px) {
-  .content-container {
-    padding: 15px;
-    border-radius: 8px; /* Slightly smaller radius on mobile */
-    margin: 0 10px; /* Add side margins instead of full width */
-    width: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .content-container {
-    padding: 12px;
-    border-width: 1px; /* Thinner border on small devices */
-  }
-}
-
 header {
   text-align: center;
   padding: 20px;

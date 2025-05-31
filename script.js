@@ -18,85 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize intersection observer for better scroll detection
     initIntersectionObserver(contentSections);
 
-    
-    // Initialize dynamic section heights
-    initSimpleDynamicSections(contentSections);
-    
-    // Re-calculate on window resize
-    window.addEventListener('resize', function() {
-        initSimpleDynamicSections(contentSections);
-    });
-
     console.log('Initialization complete');
 });
-
-function initSimpleDynamicSections(sections) {
-    const viewportHeight = window.innerHeight;
-    
-    sections.forEach((section) => {
-        // Get the actual content height (all children combined)
-        let contentHeight = 0;
-        Array.from(section.children).forEach(child => {
-            contentHeight += child.offsetHeight;
-        });
-        
-        // Add padding to content height
-        contentHeight += 100; // Extra padding for spacing
-        
-        // Classify section based on content length
-        const isLongSection = contentHeight > viewportHeight * 0.8;
-        
-        // Apply appropriate styles based on section type
-        if (isLongSection) {
-            // For long sections, remove fixed height and add appropriate padding
-            section.style.minHeight = 'auto';
-            section.style.paddingTop = '5vh';
-            section.style.paddingBottom = '5vh';
-            section.classList.add('long-section');
-            section.classList.remove('short-section');
-        } else {
-            // For short sections, maintain full viewport height
-            section.style.minHeight = '100vh';
-            section.style.paddingTop = '0';
-            section.style.paddingBottom = '0';
-            section.classList.add('short-section');
-            section.classList.remove('long-section');
-        }
-    });
-    
-    // Initialize simple intersection observer
-    initSimpleObserver(sections);
-}
-
-/**
- * Initialize a simple intersection observer for section visibility
- */
-function initSimpleObserver(sections) {
-    // Create options for the observer
-    const observerOptions = {
-        rootMargin: '0px',
-        threshold: 0.3 // Lower threshold to trigger earlier
-    };
-    
-    // Create the observer
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const section = entry.target;
-            
-            if (entry.isIntersecting) {
-                // Element is entering the viewport
-                if (!section.classList.contains('visible')) {
-                    section.classList.add('visible');
-                }
-            }
-        });
-    }, observerOptions);
-    
-    // Observe all sections
-    sections.forEach(section => {
-        observer.observe(section);
-    });
-}
 
 // Apply different animation classes to sections
 function applyAnimationClasses(sections) {

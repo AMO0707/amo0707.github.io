@@ -251,8 +251,27 @@ header h1 {
   transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
-#theme-toggle:hover {
-  background-color: var(--highlight-color);
+@media (hover: hover) {
+  /* Only apply hover effects on devices that support hover */
+  #theme-toggle:hover {
+    background-color: var(--highlight-color);
+  }
+}
+
+@media (hover: none) {
+  #theme-toggle:hover {
+    background-color: var(--container-bg); /* Reset hover effect */
+  }
+  
+  #theme-toggle:active {
+    background-color: var(--highlight-color);
+    transform: scale(0.95);
+  }
+}
+
+
+#theme-toggle:active {
+  transform: scale(0.9);
 }
 
 .toggle-icon {

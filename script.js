@@ -1,6 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Initializing personal webpage with fullscreen sections');
 
+    const emojis = document.querySelectorAll('.emoji');
+  
+  // Add width and height attributes to all emoji images
+  emojis.forEach(emoji => {
+    // Get computed size (1.5em converted to pixels)
+    const computedStyle = window.getComputedStyle(emoji);
+    const size = parseFloat(computedStyle.width);
+    
+    // Add attributes that Reader Mode will respect
+    emoji.setAttribute('width', Math.round(size));
+    emoji.setAttribute('height', Math.round(size));
+  });
+  
+  // Make sure all content sections are in the DOM
+  // This ensures Reader Mode can see them even if they're hidden
+  const sections = document.querySelectorAll('.content-section');
+  sections.forEach(section => {
+    // If using display:none, switch to opacity
+    if (section.style.display === 'none' || getComputedStyle(section).display === 'none') {
+      section.style.display = 'block';
+      section.style.opacity = '0';
+      section.style.position = 'absolute';
+      section.style.pointerEvents = 'none';
+      
+      // Store original state to restore later
+      section.dataset.originalDisplay = 'none';
+    }
+  });
     // Get all content sections
     const contentSections = document.querySelectorAll('.content-section');
 
@@ -20,8 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initIntersectionObserver(contentSections);
 
     console.log('Initialization complete');
-
-
 });
 
 // Apply different animation classes to sections
@@ -217,9 +243,6 @@ function initIntersectionObserver(sections) {
 
         // Observe all sections
         sections.forEach(section => {
-            observer.observe(section);
-        });
-        document.querySelectorAll('.js-animated-content').forEach(section => {
             observer.observe(section);
         });
     } else {

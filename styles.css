@@ -672,10 +672,11 @@ body:not(.dark-theme) .toggle-icon.light {
 
   /* Background layer adjustments */
   .background-image {
-    opacity: 0.30;
+    opacity: 0.20;
   }
 
   .content-container {
+    padding-top: 100vh;
     backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     padding: 15px;
@@ -700,6 +701,6 @@ body:not(.dark-theme) .toggle-icon.light {
 
 @media (min-width: 1024px) {
   :root {
-    --container-width: clamp(720px, 46%, 960px);
+    --container-width: clamp(600px, 48%, 850px);
   }
 }

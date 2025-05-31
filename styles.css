@@ -52,13 +52,6 @@
   vertical-align: middle;
 }
 
- @media print {
-    .emoji {
-      width: 24px !important;
-      height: 24px !important;
-    }
-  }
-
 * {
   margin: 0;
   padding: 0;
@@ -420,8 +413,6 @@ body:not(.dark-theme) .toggle-icon.light {
   /* Remove the top/bottom margin since the row has margin */
 }
 
-
-
 .image-container:hover {
   transform: translateY(-5px);
   box-shadow: var(--card-shadow);
@@ -440,7 +431,7 @@ body:not(.dark-theme) .toggle-icon.light {
 
 
 /* Media queries for responsiveness */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   header h1 {
     font-size: 2rem;
   }
@@ -472,7 +463,6 @@ body:not(.dark-theme) .toggle-icon.light {
   }
 }
 
-/* Collapsed state for mobile */
 @media (max-width: 768px) {
   .preferences-panel {
     transform: translateX(calc(100% - 40px));
@@ -500,15 +490,15 @@ body:not(.dark-theme) .toggle-icon.light {
      --container-bg: linear-gradient(to bottom, rgba(35, 35, 45, 0.5), rgba(25, 25, 35, 0.5));
   }
   .background-image {
-    opacity: 0.30; /* More transparent on mobile */
+    opacity: 0.30;
   }
   
   .content-container {
-    backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5)); /* Increased blur on mobile */
+    backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     padding: 15px;
-    border-radius: 8px; /* Slightly smaller radius on mobile */
-    margin: 0 10px; /* Add side margins instead of full width */
+    border-radius: 8px; 
+    margin: 0 10px; 
     width: auto;
   }
 }
@@ -557,7 +547,7 @@ body:not(.dark-theme) .toggle-icon.light {
 
 @media (max-width: 768px) {
   .content-section p {
-    text-shadow: 0 1px 1px rgba(0,0,0,0.05); /* Subtle text shadow for readability */
+    text-shadow: 0 1px 1px rgba(0,0,0,0.05); 
   }
   
   .dark-theme .content-section p {
@@ -576,9 +566,121 @@ body:not(.dark-theme) .toggle-icon.light {
 }
 
 @media (max-width: 768px) {
-  /* Use simpler animations on mobile */
   .content-section {
-    will-change: opacity; /* Limit will-change to just opacity */
+    will-change: opacity; 
   }
   
+} */
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .content-container {
+    padding: 12px;
+    border-width: 1px;
+  }
+
+  .content-section {
+    padding: 1.5rem;
+  }
+
+  #theme-toggle {
+    height: 30px;
+    width: 30px;
+  }
+  
+  .toggle-icon {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Typography scaling */
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .content-section h2 {
+    font-size: 2rem;
+  }
+
+  .content-section p {
+    font-size: 1rem;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); /* Light text shadow */
+  }
+
+  /* Dark theme text shadows */
+  .dark-theme .content-section p {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  h1, h2, h3 {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark-theme h1, 
+  .dark-theme h2, 
+  .dark-theme h3 {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Panel collapse (mobile drawer effect) */
+  .preferences-panel {
+    transform: translateX(calc(100% - 40px));
+  }
+
+  .preferences-panel:hover,
+  .preferences-panel:focus-within {
+    transform: translateX(0);
+  }
+
+  /* CSS Variables (mobile overrides) */
+  :root {
+    --container-bg: rgba(255, 255, 255, 0.7);
+    --container-width: 95%;
+    --backdrop-blur: 3px; 
+  }
+
+  .dark-theme {
+    --container-bg: linear-gradient(to bottom, rgba(35, 35, 45, 0.5), rgba(25, 25, 35, 0.5));
+  }
+
+  /* Background layer adjustments */
+  .background-image {
+    opacity: 0.30;
+  }
+
+  .content-container {
+    backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
+    -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
+    padding: 15px;
+    border-radius: 8px;
+    margin: 0 10px;
+    width: auto;
+  }
+
+  .content-container::before {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  }
+
+  .dark-theme .content-container::before {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.08));
+  }
+
+  /* Simplified animations on mobile */
+  .content-section {
+    will-change: opacity;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --container-width: clamp(720px, 46%, 960px);
+  }
 }

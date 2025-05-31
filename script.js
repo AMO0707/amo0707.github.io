@@ -1,24 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Initializing personal webpage with fullscreen sections');
-    const styleEl = document.createElement('style');
-    styleEl.textContent = `
-    @media print {
-      /* Force all content to be visible in print/reader mode */
-      .content-section {
-        opacity: 1 !important;
-        transform: none !important;
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      /* Fix emoji sizes in print/reader mode */
-      .emoji {
-        width: 24px !important;
-        height: 24px !important;
-      }
-    }
-  `;
-    document.head.appendChild(styleEl);
     // Get all content sections
     const contentSections = document.querySelectorAll('.content-section');
 

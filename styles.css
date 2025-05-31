@@ -42,7 +42,7 @@
   --border-color: #444444;
   --backdrop-blur: 15px;
   --container-shadow: 0 0 25px rgba(0, 0, 0, 0.3), 0 0 10px rgba(79, 156, 255, 0.1);
-  --container-border: 1px solid rgba(79, 156, 255, 0.15);
+  --container-border: 1px solid rgba(79, 156, 255, 0.1);
 
 }
 
@@ -51,6 +51,13 @@
   height: 1.5em;
   vertical-align: middle;
 }
+
+ @media print {
+    .emoji {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
 
 * {
   margin: 0;

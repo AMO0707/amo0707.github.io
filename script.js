@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('Initialization complete');
 
-  
+
 });
 
 // Apply different animation classes to sections
@@ -31,7 +31,7 @@ function applyAnimationClasses(sections) {
     sections.forEach((section, index) => {
         // Initially add fade-in-up class to all sections
         section.classList.add('fade-in-up');
-        
+
         // Store the original animation class for reference
         section.setAttribute('data-original-animation', 'fade-in-up');
 
@@ -82,15 +82,15 @@ let lastScrollTop = 0;
 let scrollDirection = 'down';
 
 function initScrollDirectionTracking() {
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const st = window.scrollY || document.documentElement.scrollTop;
-        
+
         if (st > lastScrollTop) {
             // Scrolling down
             if (scrollDirection !== 'down') {
                 scrollDirection = 'down';
                 console.log('Scroll direction changed to DOWN');
-                
+
                 // Update animation classes for all sections
                 updateAnimationClasses('fade-in-up');
             }
@@ -99,16 +99,16 @@ function initScrollDirectionTracking() {
             if (scrollDirection !== 'up') {
                 scrollDirection = 'up';
                 console.log('Scroll direction changed to UP');
-                
+
                 // Update animation classes for all sections
                 updateAnimationClasses('fade-in-down');
-                
+
                 // When direction changes to up, reset all sections that are not in view
                 // This ensures they'll animate again when scrolled back into view
                 resetSectionsOutOfView();
             }
         }
-        
+
         lastScrollTop = st <= 0 ? 0 : st; // For mobile or negative scrolling
     }, { passive: true });
 }
@@ -116,37 +116,37 @@ function initScrollDirectionTracking() {
 // Update animation classes based on scroll direction
 // function updateAnimationClasses(newAnimationClass) {
 //     const sections = document.querySelectorAll('.content-section');
-    
+
 //     sections.forEach(section => {
 //         // Remove current animation classes
 //         section.classList.remove('fade-in-up', 'fade-in-down');
-        
+
 //         // Add new animation class
 //         section.classList.add(newAnimationClass);
 //     });
 // }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('close-button').addEventListener('click', function() {
-    window.close();
-    
-    // Fallback for browsers that block window.close()
-    // This will redirect to a blank page if window.close() fails
-    setTimeout(function() {
-      window.location.href = 'about:blank';
-    }, 300);
-  });
-  
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('close-button').addEventListener('click', function () {
+        window.close();
+
+        // Fallback for browsers that block window.close()
+        // This will redirect to a blank page if window.close() fails
+        setTimeout(function () {
+            window.location.href = 'about:blank';
+        }, 300);
+    });
+
 });
 
 function updateAnimationClasses(newAnimationClass) {
     // Don't change classes of sections already in view
     const sections = document.querySelectorAll('.content-section:not(.visible)');
-    
+
     sections.forEach(section => {
         // Remove current animation classes
         section.classList.remove('fade-in-up', 'fade-in-down');
-        
+
         // Add new animation class
         section.classList.add(newAnimationClass);
     });
@@ -155,16 +155,16 @@ function updateAnimationClasses(newAnimationClass) {
 // Reset sections that are not currently in the viewport
 function resetSectionsOutOfView() {
     const sections = document.querySelectorAll('.content-section');
-    
+
     sections.forEach(section => {
         const rect = section.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
-        
+
         // If section is not in viewport
         if (rect.bottom <= 0 || rect.top >= viewportHeight) {
             // Remove visible class to reset animation state
             section.classList.remove('visible');
-            
+
             // Also reset child elements
             const childElements = section.querySelectorAll('.highlight-line, .experience-item, .education-item, .project-item, .skill-item');
             childElements.forEach(element => {
@@ -192,15 +192,15 @@ function initIntersectionObserver(sections) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const section = entry.target;
-                
+
                 if (entry.isIntersecting) {
                     // Element is entering the viewport
                     console.log('Section entering viewport:', section.dataset.index);
-                    
+
                     // Add visible class to trigger animation
                     if (!section.classList.contains('visible')) {
                         section.classList.add('visible');
-                        
+
                         // Also make child elements visible with animation
                         animateChildElements(section);
                     }
@@ -214,9 +214,12 @@ function initIntersectionObserver(sections) {
                 }
             });
         }, options);
-        
+
         // Observe all sections
         sections.forEach(section => {
+            observer.observe(section);
+        });
+        document.querySelectorAll('.js-animated-content').forEach(section => {
             observer.observe(section);
         });
     } else {
@@ -265,17 +268,17 @@ function resetChildElements(section) {
 function handleScrollFallback() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const viewportHeight = window.innerHeight;
-    
+
     // Update scroll progress
     updateScrollProgressBar();
-    
+
     // Get all content sections
     const sections = document.querySelectorAll('.content-section');
-    
+
     sections.forEach(function (section) {
         // Calculate element position relative to viewport
         const rect = section.getBoundingClientRect();
-        
+
         // Check if section is in viewport
         if (rect.top < viewportHeight * 0.9 && rect.bottom > viewportHeight * 0.1) {
             // Section is visible
@@ -303,12 +306,12 @@ window.addEventListener('resize', function () {
 });
 
 // Parallax effect for background elements
-window.addEventListener('scroll', function() {
-  const scrollPosition = window.scrollY;
-  
-  document.querySelectorAll('.parallax-layer').forEach(layer => {
-    const speed = layer.getAttribute('data-speed');
-    const yPos = -(scrollPosition * speed);
-    layer.style.transform = `translateY(${yPos}px)`;
-  });
+window.addEventListener('scroll', function () {
+    const scrollPosition = window.scrollY;
+
+    document.querySelectorAll('.parallax-layer').forEach(layer => {
+        const speed = layer.getAttribute('data-speed');
+        const yPos = -(scrollPosition * speed);
+        layer.style.transform = `translateY(${yPos}px)`;
+    });
 });

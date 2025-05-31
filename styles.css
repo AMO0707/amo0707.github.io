@@ -136,7 +136,7 @@ header h1 {
 
 /* Fullscreen section styling */
 .content-section {
-  min-height: 100vh;
+  min-height: 120vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -252,6 +252,7 @@ header h1 {
 }
 
 @media (hover: hover) {
+
   /* Only apply hover effects on devices that support hover */
   #theme-toggle:hover {
     background-color: var(--highlight-color);
@@ -260,9 +261,10 @@ header h1 {
 
 @media (hover: none) {
   #theme-toggle:hover {
-    background-color: var(--container-bg); /* Reset hover effect */
+    background-color: var(--container-bg);
+    /* Reset hover effect */
   }
-  
+
   #theme-toggle:active {
     background-color: var(--highlight-color);
     transform: scale(0.95);
@@ -609,13 +611,14 @@ body:not(.dark-theme) .toggle-icon.light {
     height: 30px;
     width: 30px;
   }
-  
+
   .toggle-icon {
     font-size: 0.9rem;
   }
 }
 
 @media (max-width: 768px) {
+
   /* Typography scaling */
   header h1 {
     font-size: 2rem;
@@ -631,7 +634,8 @@ body:not(.dark-theme) .toggle-icon.light {
 
   .content-section p {
     font-size: 1rem;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); /* Light text shadow */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    /* Light text shadow */
   }
 
   /* Dark theme text shadows */
@@ -639,12 +643,14 @@ body:not(.dark-theme) .toggle-icon.light {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   }
 
-  .dark-theme h1, 
-  .dark-theme h2, 
+  .dark-theme h1,
+  .dark-theme h2,
   .dark-theme h3 {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
@@ -663,7 +669,7 @@ body:not(.dark-theme) .toggle-icon.light {
   :root {
     --container-bg: rgba(255, 255, 255, 0.7);
     --container-width: 95%;
-    --backdrop-blur: 3px; 
+    --backdrop-blur: 3px;
   }
 
   .dark-theme {
@@ -676,13 +682,18 @@ body:not(.dark-theme) .toggle-icon.light {
   }
 
   .content-container {
-    padding-top: 100vh;
     backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur) * 1.5));
     padding: 15px;
     border-radius: 8px;
     margin: 0 10px;
     width: auto;
+  }
+
+  .content-section:first-child {
+    margin-top: 0;
+    padding-top: 2rem;
+    /* Standard padding */
   }
 
   .content-container::before {
@@ -697,6 +708,7 @@ body:not(.dark-theme) .toggle-icon.light {
   .content-section {
     will-change: opacity;
   }
+
 }
 
 @media (min-width: 1024px) {
